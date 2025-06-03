@@ -5,7 +5,7 @@ Target Website: SauceLabs (https://saucelabs.com)
 
 import asyncio
 from playwright.async_api import async_playwright, Playwright
-from playwright.sync_api import sync_playwright, Playwright as SyncPlaywright
+from playwright.sync_api import sync_playwright, Playwright as SyncPlaywright, Page
 import time
 
 # =============================================================================
@@ -461,6 +461,15 @@ def run_all_examples():
     print("\n" + "="*60 + "\n")
     
     print("✅ All examples completed!")
+
+
+def test_PlaywrightShortcuts(page:Page):
+    print("Running Playwright Shortcuts Test")
+    page.goto("https://saucelabs.com")
+    assert "Sauce Labs" in page.title(), "Title does not match"
+    page.screenshot(path="saucelabs_screenshot.png")
+    print("Test completed successfully!")
+
 
 # =============================================================================
 # SUMMARY OF ALL BROWSER LAUNCH OPTIONS
