@@ -200,17 +200,6 @@ def device_emulation():
         page.goto("https://saucelabs.com")
         print(f"iPhone 12: {page.title()}")
         time.sleep(2)
-        
-        # iPad emulation
-        context.close()
-        ipad = p.devices['iPad Pro']
-        context = browser.new_context(**ipad)
-        page = context.new_page()
-        page.goto("https://saucelabs.com")
-        print(f"iPad Pro: {page.title()}")
-        time.sleep(2)
-        
-        # Custom mobile device
         context.close()
         context = browser.new_context(
             viewport={'width': 375, 'height': 667},
