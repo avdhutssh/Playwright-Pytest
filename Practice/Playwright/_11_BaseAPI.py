@@ -24,14 +24,14 @@ class API_Utils:
         print(response_json)
         return response_json["token"]
 
-    def createOrder(self, playwright: Playwright):
+    def createOrder(self, playwright: Playwright, productId: str = "67a8df56c0d3e6622a297ccd"):
         apiRequestContext = playwright.request.new_context(base_url=baseURL)
         response = apiRequestContext.post("/api/ecom/order/create-order",
-                                            data=ordersPayLoad,
+                                            data={"orders": [{"country": "India", "productOrderedId": productId}]},
                                             headers=self.get_headers(playwright))
 
-        # assert response.status == 201, f"Failed to create order: {response.status} {response.text}"
-        # assert response.status_text == "Created", f"Expected status text 'Created' but got {response.status_text}"
+        assert response.status == 201, f"Failed to create order: {response.status} {response.text}"
+        assert response.status_text == "Created", f"Expected status text 'Created' but got {response.status_text}"
         response_body = response.json()
         print(response_body)
         orderId = response_body["orders"][0]
