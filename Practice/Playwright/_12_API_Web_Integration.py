@@ -33,9 +33,12 @@ def test_ecom_API_Web(playwright:Playwright):
     delete_buttons = page.locator("button.btn-danger")
     delete_count = delete_buttons.count()
     print(f"Number of delete buttons found: {delete_count}")
-    for i in range(delete_count):
-        delete_buttons.nth(0).click()
-        time.sleep(1)
+    # for i in range(delete_count):
+    #     delete_buttons.first.click()
+    #     time.sleep(1)
+    while page.locator("button.btn-danger").count() > 0:
+        page.locator("button.btn-danger").first.click()
+        page.wait_for_timeout(1000)
     print("✅ All existing orders deleted")
 
     expect(page.get_by_text("You have No Orders to show at")).to_be_visible()
@@ -51,5 +54,11 @@ def test_ecom_API_Web(playwright:Playwright):
     time.sleep(1)
     print(f"✅ Order created successfully with ID: {orderID}")
 
+    # orders History page-> order is present
+    orderRow = page.locator("tr").filter(has_text=orderID)
+    orderRow.get_by_role("button", name="View").click()
+    expect(page.locator(".tagline")).to_contain_text("Thank you for Shopping With Us")
+    print("✅ Order details page is displayed")
+    context.close()
 
 
