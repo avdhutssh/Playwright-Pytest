@@ -14,16 +14,11 @@ with open("EcomAppAutomationFramework/TestData/creds.json", "r") as file:
     print(test_data)
     users_data = test_data['user_credentials']
 
-@pytest.mark.parametrize('user_credentials',users_data)
-def test_e2e_web_api(playwright:Playwright, user_credentials):
+@pytest.mark.parametrize('user_credentials', users_data)
+def test_e2e_web_api(playwright:Playwright, browserInstance, user_credentials):
     username = user_credentials['userEmail']
     password = user_credentials['userPassword']
-
-    browser = playwright.chromium.launch(headless=False)
-    context = browser.new_context(viewport=None)
-    page = context.new_page()
-
-    LoginPage = loginPage(page)
+    LoginPage = loginPage(browserInstance)
     LoginPage.navigate_to_login()
     DashboardPage = LoginPage.loginToApp(username,password)
     ProductDetailsPage = DashboardPage.click_product_view(productName)
