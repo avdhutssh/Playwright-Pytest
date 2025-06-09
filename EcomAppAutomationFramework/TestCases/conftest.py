@@ -1,5 +1,4 @@
 import pytest
-from setuptools.windows_support import windows_only
 
 
 @pytest.fixture(scope="session")

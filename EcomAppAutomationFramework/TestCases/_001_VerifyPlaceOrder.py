@@ -14,6 +14,7 @@ with open("EcomAppAutomationFramework/TestData/creds.json", "r") as file:
     print(test_data)
     users_data = test_data['user_credentials']
 
+@pytest.mark.integration
 @pytest.mark.parametrize('user_credentials', users_data)
 def test_e2e_web_api(playwright:Playwright, browserInstance, user_credentials):
     username = user_credentials['userEmail']
