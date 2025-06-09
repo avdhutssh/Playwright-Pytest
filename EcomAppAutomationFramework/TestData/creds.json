@@ -1,0 +1,9 @@
+{
+  "user_credentials": [{
+    "userEmail" : "av1234@gmail.com",
+    "userPassword"  : "Bulbul@123"
+  }, {
+    "userEmail" : "anshika@gmail.com",
+    "userPassword"  : "Iamking@000"
+  }]
+}

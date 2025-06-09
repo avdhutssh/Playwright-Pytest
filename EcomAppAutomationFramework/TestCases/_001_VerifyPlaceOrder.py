@@ -1,20 +1,30 @@
+import json
 import time
-from itertools import product
 
+import pytest
 from playwright.sync_api import Playwright, expect
 
-from _11_BaseAPI import API_Utils
+from EcomAppAutomationFramework.API_Utils.API_Factory import API_Factory
 
 productName = "ZARA COAT 3"
 
-def test_ecom_API_Web(playwright:Playwright):
-    #login to app
+with open("EcomAppAutomationFramework/TestData/creds.json", "r") as file:
+    test_data = json.load(file)
+    print(test_data)
+    users_data = test_data['user_credentials']
+
+@pytest.mark.parametrize('user_credentials',users_data)
+def test_e2e_web_api(playwright:Playwright, user_credentials):
+    username = user_credentials['userEmail']
+    password = user_credentials['userPassword']
+
     browser = playwright.chromium.launch(headless=False)
     context = browser.new_context(viewport=None)
     page = context.new_page()
+
     page.goto("https://rahulshettyacademy.com/client")
-    page.get_by_placeholder("email@example.com").fill("av1234@gmail.com")
-    page.get_by_placeholder("enter your passsword").fill("Bulbul@123")
+    page.get_by_placeholder("email@example.com").fill(username)
+    page.get_by_placeholder("enter your passsword").fill(password)
     page.get_by_role("button", name="Login").click()
     expect( page.get_by_role("button", name="ORDERS")).to_be_visible()
     print("✅ Logged in successfully")
@@ -33,9 +43,6 @@ def test_ecom_API_Web(playwright:Playwright):
     delete_buttons = page.locator("button.btn-danger")
     delete_count = delete_buttons.count()
     print(f"Number of delete buttons found: {delete_count}")
-    # for i in range(delete_count):
-    #     delete_buttons.first.click()
-    #     time.sleep(1)
     while page.locator("button.btn-danger").count() > 0:
         page.locator("button.btn-danger").first.click()
         page.wait_for_timeout(1000)
@@ -44,8 +51,8 @@ def test_ecom_API_Web(playwright:Playwright):
     expect(page.get_by_text("You have No Orders to show at")).to_be_visible()
 
     #create new order via API for product zara
-    apiUtils=API_Utils()
-    orderID = apiUtils.createOrder(playwright,productID)
+    apiFactory=API_Factory()
+    orderID = apiFactory.createOrder(playwright,productID)
 
     #verify order is created via UI
     page.goto("https://rahulshettyacademy.com/client")
