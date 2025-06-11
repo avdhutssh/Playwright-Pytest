@@ -14,7 +14,7 @@ def pytest_addoption(parser):
     )
 
 @pytest.fixture
-def browserInstance(playwright,request):
+def browserInstance(playwright, request):
     browser_name = request.config.getoption("browser_name")
     if browser_name == "chrome":
         browser = playwright.chromium.launch(headless=False)
@@ -26,6 +26,8 @@ def browserInstance(playwright,request):
         raise ValueError(f"Unsupported browser: {browser_name}")
     context = browser.new_context(viewport=None)
     page = context.new_page()
+    context.tracing.start(screenshots=True, snapshots=True, sources=True)
     yield page
+    context.tracing.stop(path=f"trace_{request.node.name}.zip")
     context.close()
     browser.close()
