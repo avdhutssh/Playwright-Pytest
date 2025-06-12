@@ -6,6 +6,11 @@ from playwright.sync_api import Playwright, expect
 
 from EcomAppAutomationFramework.API_Utils.API_Factory import API_Factory
 from EcomAppAutomationFramework.PageObjects.loginPage import loginPage
+from EcomAppAutomationFramework.PageObjects.dashboardPage import dashboardPage
+from EcomAppAutomationFramework.PageObjects.cartPage import cartPage
+from EcomAppAutomationFramework.PageObjects.checkoutPage import checkoutPage
+from EcomAppAutomationFramework.PageObjects.orderDetailsPage import orderDetailsPage
+from EcomAppAutomationFramework.Common_Utils.logger import get_logger
 
 productName = "ZARA COAT 3"
 
@@ -13,6 +18,8 @@ with open("EcomAppAutomationFramework/TestData/creds.json", "r") as file:
     test_data = json.load(file)
     print(test_data)
     users_data = test_data['user_credentials']
+
+logger = get_logger(__name__)
 
 @pytest.mark.integration
 @pytest.mark.parametrize('user_credentials', users_data)
@@ -35,4 +42,20 @@ def test_e2e_web_api(playwright:Playwright, browserInstance, user_credentials):
     assert OrdersPage.verify_order_present(orderID)
     OrderDetailsPage = OrdersPage.click_view_button_for_order(orderID)
     OrderDetailsPage.verify_thank_you_message()
+
+@pytest.mark.smoke
+def test_place_order(browserInstance):
+    LoginPage = loginPage(browserInstance)
+    LoginPage.navigate_to_login()
+    DashboardPage = LoginPage.loginToApp("av1234@gmail.com", "Bulbul@123")
+    product_name = "ZARA COAT 3"
+    DashboardPage.add_product_to_cart(product_name)
+    CartPage = DashboardPage.navigate_to_cart()
+    assert CartPage.verify_product_in_cart(product_name)
+    CheckoutPage = CartPage.proceed_to_checkout()
+    CheckoutPage.enter_shipping_country("India")
+    CheckoutPage.enter_payment_info()
+    OrderDetailsPage = CheckoutPage.place_order()
+    assert OrderDetailsPage.verify_successful_order_msg()
+    order_id = OrderDetailsPage.get_order_id()
 
