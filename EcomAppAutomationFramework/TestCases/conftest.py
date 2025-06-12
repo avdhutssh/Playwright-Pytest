@@ -26,8 +26,8 @@ def browserInstance(playwright, request):
         raise ValueError(f"Unsupported browser: {browser_name}")
     context = browser.new_context(viewport=None)
     page = context.new_page()
-    context.tracing.start(screenshots=True, snapshots=True, sources=True)
+    # context.tracing.start(screenshots=True, snapshots=True, sources=True)
     yield page
-    context.tracing.stop(path=f"trace_{request.node.name}.zip")
+    # context.tracing.stop(path=f"trace_{request.node.name}.zip")
     context.close()
     browser.close()
