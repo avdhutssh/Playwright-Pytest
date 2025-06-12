@@ -6,7 +6,6 @@ logger = get_logger(__name__)
 class cartPage:
     def __init__(self, page):
         self.page = page
-        # Locators
         self.cart_items = page.locator(".cartSection h3")
         self.checkout_button = page.locator("//button[contains(text(), 'Checkout')]")
         self.product_in_cart = lambda product_name: page.locator(f"//h3[contains(text(), '{product_name}')]")
@@ -49,6 +48,5 @@ class cartPage:
         self.checkout_button.click()
         self.page.wait_for_load_state("networkidle")
         logger.info("Navigated to checkout page")
-        # Import here to avoid circular imports
         from EcomAppAutomationFramework.PageObjects.checkoutPage import checkoutPage
         return checkoutPage(self.page) 

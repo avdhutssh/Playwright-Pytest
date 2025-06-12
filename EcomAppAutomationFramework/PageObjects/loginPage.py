@@ -10,7 +10,6 @@ class loginPage:
         self.username_input = page.get_by_placeholder("email@example.com")
         self.password_input = page.locator("#userPassword")
         self.login_button = page.get_by_role("button", name="Login")
-        # Error messages can appear in toast notifications or alerts
         self.login_error = page.locator(".toast-message, .alert-danger, .ng-star-inserted")
         self.login_page_elements = page.locator(".login-title")
 
@@ -27,13 +26,9 @@ class loginPage:
     
     def is_login_error_displayed(self):
         logger.info("Checking for login error message")
-        # Wait a bit for any toast notifications to appear
         self.page.wait_for_timeout(1000)
-        
-        # Check for toast notifications or error messages
         error_visible = self.login_error.is_visible()
         if not error_visible:
-            # If no explicit error, check if we're still on login page (implicit error)
             error_visible = self.login_page_elements.is_visible()
         
         logger.info(f"Login error displayed: {error_visible}")

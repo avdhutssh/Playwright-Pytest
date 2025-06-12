@@ -1,8 +1,6 @@
 import json
-import time
-
 import pytest
-from playwright.sync_api import Playwright, expect
+from playwright.sync_api import Playwright
 
 from EcomAppAutomationFramework.API_Utils.API_Factory import API_Factory
 from EcomAppAutomationFramework.PageObjects.loginPage import loginPage
@@ -10,16 +8,12 @@ from EcomAppAutomationFramework.PageObjects.dashboardPage import dashboardPage
 from EcomAppAutomationFramework.PageObjects.cartPage import cartPage
 from EcomAppAutomationFramework.PageObjects.checkoutPage import checkoutPage
 from EcomAppAutomationFramework.PageObjects.orderDetailsPage import orderDetailsPage
-from EcomAppAutomationFramework.Common_Utils.logger import get_logger
 
 productName = "ZARA COAT 3"
 
 with open("EcomAppAutomationFramework/TestData/creds.json", "r") as file:
     test_data = json.load(file)
-    print(test_data)
     users_data = test_data['user_credentials']
-
-logger = get_logger(__name__)
 
 @pytest.mark.integration
 @pytest.mark.parametrize('user_credentials', users_data)

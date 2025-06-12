@@ -10,6 +10,7 @@ class ordersPage:
         self.delete_buttons = page.locator("button.btn-danger")
         self.no_orders_text = page.get_by_text("You have No Orders to show at")
         self.order_history_table = page.locator("table.order-table, table.table, table")
+        self.order_rows = page.locator("tbody tr")
 
     def delete_all_existing_orders(self):
         delete_count = self.delete_buttons.count()
@@ -35,7 +36,3 @@ class ordersPage:
         order_row = self.page.locator("tr").filter(has_text=order_id)
         order_row.get_by_role("button", name="View").click()
         return orderDetailsPage(self.page)
-    
-    def is_order_history_displayed(self):
-        logger.info("Checking if order history is displayed")
-        return self.order_history_table.is_visible()

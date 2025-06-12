@@ -37,7 +37,9 @@ class dashboardPage:
     def is_product_search_result_displayed(self, product_name):
         logger.info(f"Checking if search result for '{product_name}' is displayed")
         self.page.wait_for_load_state("networkidle")
-        return self.page.locator(f"//*[contains(text(),'{product_name}')]").is_visible(timeout=5000)
+        product_locator = self.page.locator(f"//*[contains(text(),'{product_name}')]")
+        logger.info(f"Search result locator text: {product_locator.text_content()}")
+        return product_locator.is_visible(timeout=5000)
 
     def add_product_to_cart(self, product_name):
         logger.info(f"Adding product {product_name} to cart")
