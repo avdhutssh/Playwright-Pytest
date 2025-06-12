@@ -1,6 +1,8 @@
 import time
 from playwright.sync_api import expect
+import allure
 from EcomAppAutomationFramework.Common_Utils.logger import get_logger
+from EcomAppAutomationFramework.Common_Utils.allure_utils import attach_screenshot
 
 from EcomAppAutomationFramework.PageObjects.ordersPage import ordersPage
 from EcomAppAutomationFramework.PageObjects.productdetailsPage import productDetailsPage
@@ -17,43 +19,74 @@ class dashboardPage:
         self.toast_message = page.locator(".toast-container")
 
     def click_product_view(self, product_name):
-        logger.info(f"Clicking view button for product: {product_name}")
-        view_button = self.page.locator(f"//*[normalize-space(text())='{product_name}']/../..//button[normalize-space(text())='View']")
-        view_button.click()
-        return productDetailsPage(self.page)
+        with allure.step(f"Clicking view button for product: {product_name}"):
+            logger.info(f"Clicking view button for product: {product_name}")
+            view_button = self.page.locator(f"//*[normalize-space(text())='{product_name}']/../..//button[normalize-space(text())='View']")
+            attach_screenshot(self.page, f"Before clicking view for {product_name}")
+            view_button.click()
+            attach_screenshot(self.page, f"After clicking view for {product_name}")
+            return productDetailsPage(self.page)
 
     def navigate_to_orders(self):
-        logger.info("Navigating to orders page")
-        self.orders_button.click()
-        self.page.wait_for_load_state("networkidle")
-        logger.info("Navigated to orders page")
-        return ordersPage(self.page)
+        with allure.step("Navigating to orders page"):
+            logger.info("Navigating to orders page")
+            attach_screenshot(self.page, "Before navigating to orders")
+            self.orders_button.click()
+            self.page.wait_for_load_state("networkidle")
+            attach_screenshot(self.page, "After navigating to orders")
+            logger.info("Navigated to orders page")
+            return ordersPage(self.page)
     
     def search_product(self, product_name):
-        logger.info(f"Searching for product: {product_name}")
-        self.search_input.fill(product_name)
-        self.page.keyboard.press("Enter")
+        with allure.step(f"Searching for product: {product_name}"):
+            logger.info(f"Searching for product: {product_name}")
+            attach_screenshot(self.page, f"Before searching for {product_name}")
+            self.search_input.fill(product_name)
+            self.page.keyboard.press("Enter")
+            self.page.wait_for_load_state("networkidle")
+            attach_screenshot(self.page, f"After searching for {product_name}")
       
     def is_product_search_result_displayed(self, product_name):
-        logger.info(f"Checking if search result for '{product_name}' is displayed")
-        self.page.wait_for_load_state("networkidle")
-        product_locator = self.page.locator(f"//*[contains(text(),'{product_name}')]")
-        logger.info(f"Search result locator text: {product_locator.text_content()}")
-        return product_locator.is_visible(timeout=5000)
+        with allure.step(f"Checking if search result for '{product_name}' is displayed"):
+            logger.info(f"Checking if search result for '{product_name}' is displayed")
+            self.page.wait_for_load_state("networkidle")
+            product_locator = self.page.locator(f"//*[contains(text(),'{product_name}')]")
+            attach_screenshot(self.page, f"Search results for {product_name}")
+            logger.info(f"Search result locator text: {product_locator.text_content()}")
+            is_visible = product_locator.is_visible(timeout=5000)
+            if is_visible:
+                allure.attach(
+                    self.page.screenshot(),
+                    name=f"Found product: {product_name}",
+                    attachment_type=allure.attachment_type.PNG
+                )
+            else:
+                allure.attach(
+                    self.page.screenshot(),
+                    name=f"Product not found: {product_name}",
+                    attachment_type=allure.attachment_type.PNG
+                )
+            return is_visible
 
     def add_product_to_cart(self, product_name):
-        logger.info(f"Adding product {product_name} to cart")
-        self.page.wait_for_load_state("networkidle")
-        self.page.locator(f"//*[normalize-space(text())='{product_name}']/../..//*[normalize-space(text())='Add To Cart']").click()
-        self.toast_message.wait_for(state="visible")
-        logger.info(f"Product {product_name} added to cart successfully")
+        with allure.step(f"Adding product {product_name} to cart"):
+            logger.info(f"Adding product {product_name} to cart")
+            self.page.wait_for_load_state("networkidle")
+            attach_screenshot(self.page, f"Before adding {product_name} to cart")
+            self.page.locator(f"//*[normalize-space(text())='{product_name}']/../..//*[normalize-space(text())='Add To Cart']").click()
+            self.toast_message.wait_for(state="visible")
+            attach_screenshot(self.page, f"After adding {product_name} to cart")
+            logger.info(f"Product {product_name} added to cart successfully")
         
     def navigate_to_cart(self):
-        logger.info("Navigating to cart page")
-        self.cart_button.click()
-        self.page.wait_for_load_state("networkidle")
-        logger.info("Navigated to cart page")
-        return cartPage(self.page)
+        with allure.step("Navigating to cart page"):
+            logger.info("Navigating to cart page")
+            attach_screenshot(self.page, "Before navigating to cart")
+            self.cart_button.click()
+            self.page.wait_for_load_state("networkidle")
+            attach_screenshot(self.page, "After navigating to cart")
+            logger.info("Navigated to cart page")
+            return cartPage(self.page)
 
     def verify_product_visible(self, product_name):
         logger.info(f"Verifying product {product_name} is visible")

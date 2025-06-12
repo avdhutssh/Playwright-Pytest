@@ -1,6 +1,8 @@
 from playwright.sync_api import Playwright, APIRequestContext
 import json
+import allure
 from EcomAppAutomationFramework.Common_Utils.logger import get_logger
+from EcomAppAutomationFramework.Common_Utils.allure_utils import attach_api_request, attach_api_response
 
 logger = get_logger(__name__)
 
@@ -63,14 +65,20 @@ class API_Client:
         if params:
             logger.info(f"Query Parameters: {json.dumps(params, indent=2)}")
         
-        response = self.api_context.get(
-            endpoint,
-            params=params,
-            headers=request_headers
-        )
-        
-        logger.info(self.format_response_log(response))
-        return response
+        # Attach request details to Allure report
+        with allure.step(f"Sending GET request to {self.base_url}{endpoint}"):
+            attach_api_request(f"{self.base_url}{endpoint}", "GET", request_headers, params=params)
+            
+            response = self.api_context.get(
+                endpoint,
+                params=params,
+                headers=request_headers
+            )
+            
+            # Attach response to Allure report
+            attach_api_response(response)
+            logger.info(self.format_response_log(response))
+            return response
 
     def post(self, endpoint, data=None, json_data=None, headers=None, form_data=None):
         """
@@ -93,15 +101,21 @@ class API_Client:
         if form_data:
             logger.info(f"Multipart Form Data: {form_data}")
         
-        response = self.api_context.post(
-            endpoint,
-            data=data,
-            headers=request_headers,
-            form=form_data
-        )
-        
-        logger.info(self.format_response_log(response))
-        return response
+        # Attach request details to Allure report
+        with allure.step(f"Sending POST request to {self.base_url}{endpoint}"):
+            attach_api_request(f"{self.base_url}{endpoint}", "POST", request_headers, data, json_data)
+            
+            response = self.api_context.post(
+                endpoint,
+                data=data,
+                headers=request_headers,
+                form=form_data
+            )
+            
+            # Attach response to Allure report
+            attach_api_response(response)
+            logger.info(self.format_response_log(response))
+            return response
 
     def put(self, endpoint, data=None, json_data=None, headers=None):
         """
@@ -121,14 +135,20 @@ class API_Client:
         if data and not isinstance(data, str) and not json_data:
             logger.info(f"Form Data: {data}")
         
-        response = self.api_context.put(
-            endpoint,
-            data=data,
-            headers=request_headers
-        )
-        
-        logger.info(self.format_response_log(response))
-        return response
+        # Attach request details to Allure report
+        with allure.step(f"Sending PUT request to {self.base_url}{endpoint}"):
+            attach_api_request(f"{self.base_url}{endpoint}", "PUT", request_headers, data, json_data)
+            
+            response = self.api_context.put(
+                endpoint,
+                data=data,
+                headers=request_headers
+            )
+            
+            # Attach response to Allure report
+            attach_api_response(response)
+            logger.info(self.format_response_log(response))
+            return response
 
     def delete(self, endpoint, params=None, headers=None):
         """
@@ -141,14 +161,20 @@ class API_Client:
         if params:
             logger.info(f"Query Parameters: {json.dumps(params, indent=2)}")
         
-        response = self.api_context.delete(
-            endpoint,
-            params=params,
-            headers=request_headers
-        )
-        
-        logger.info(self.format_response_log(response))
-        return response
+        # Attach request details to Allure report
+        with allure.step(f"Sending DELETE request to {self.base_url}{endpoint}"):
+            attach_api_request(f"{self.base_url}{endpoint}", "DELETE", request_headers, params=params)
+            
+            response = self.api_context.delete(
+                endpoint,
+                params=params,
+                headers=request_headers
+            )
+            
+            # Attach response to Allure report
+            attach_api_response(response)
+            logger.info(self.format_response_log(response))
+            return response
 
     def patch(self, endpoint, data=None, json_data=None, headers=None):
         """
@@ -168,14 +194,20 @@ class API_Client:
         if data and not isinstance(data, str) and not json_data:
             logger.info(f"Form Data: {data}")
         
-        response = self.api_context.patch(
-            endpoint,
-            data=data,
-            headers=request_headers
-        )
-        
-        logger.info(self.format_response_log(response))
-        return response
+        # Attach request details to Allure report
+        with allure.step(f"Sending PATCH request to {self.base_url}{endpoint}"):
+            attach_api_request(f"{self.base_url}{endpoint}", "PATCH", request_headers, data, json_data)
+            
+            response = self.api_context.patch(
+                endpoint,
+                data=data,
+                headers=request_headers
+            )
+            
+            # Attach response to Allure report
+            attach_api_response(response)
+            logger.info(self.format_response_log(response))
+            return response
 
     def get_token(self, user_credentials):
         """
@@ -186,18 +218,19 @@ class API_Client:
         
         logger.info(f"Getting authentication token for user: {user_email}")
         
-        response = self.post(
-            "/api/ecom/auth/login",
-            data={"userEmail": user_email, "userPassword": user_password}
-        )
-        
-        assert response.ok, f"Failed to get token: {response.status} {response.text()}"
-        
-        response_json = response.json()
-        token = response_json["token"]
-        
-        logger.info(f"Authentication token obtained successfully")
-        return token
+        with allure.step(f"Getting authentication token for user: {user_email}"):
+            response = self.post(
+                "/api/ecom/auth/login",
+                data={"userEmail": user_email, "userPassword": user_password}
+            )
+            
+            assert response.ok, f"Failed to get token: {response.status} {response.text()}"
+            
+            response_json = response.json()
+            token = response_json["token"]
+            
+            logger.info(f"Authentication token obtained successfully")
+            return token
 
     def create_order(self, product_id, country="India"):
         """
@@ -205,18 +238,19 @@ class API_Client:
         """
         logger.info(f"Creating order for product ID: {product_id}")
         
-        response = self.post(
-            "/api/ecom/order/create-order",
-            data={"orders": [{"country": country, "productOrderedId": product_id}]}
-        )
-        
-        assert response.status == 201, f"Failed to create order: {response.status} {response.text()}"
-        
-        response_body = response.json()
-        order_id = response_body["orders"][0]
-        
-        logger.info(f"Order created successfully with ID: {order_id}")
-        return order_id
+        with allure.step(f"Creating order for product ID: {product_id}"):
+            response = self.post(
+                "/api/ecom/order/create-order",
+                data={"orders": [{"country": country, "productOrderedId": product_id}]}
+            )
+            
+            assert response.status == 201, f"Failed to create order: {response.status} {response.text()}"
+            
+            response_body = response.json()
+            order_id = response_body["orders"][0]
+            
+            logger.info(f"Order created successfully with ID: {order_id}")
+            return order_id
 
     def get_order_details(self, order_id):
         """
@@ -224,14 +258,15 @@ class API_Client:
         """
         logger.info(f"Getting details for order ID: {order_id}")
         
-        response = self.get(f"/api/ecom/order/get-orders-details?id={order_id}")
-        
-        assert response.ok, f"Failed to get order details: {response.status} {response.text()}"
-        
-        order_details = response.json()
-        logger.info(f"Order details retrieved successfully")
-        
-        return order_details
+        with allure.step(f"Getting details for order ID: {order_id}"):
+            response = self.get(f"/api/ecom/order/get-orders-details?id={order_id}")
+            
+            assert response.ok, f"Failed to get order details: {response.status} {response.text()}"
+            
+            order_details = response.json()
+            logger.info(f"Order details retrieved successfully")
+            
+            return order_details
 
     def get_orders(self):
         """
@@ -239,11 +274,12 @@ class API_Client:
         """
         logger.info("Getting all orders")
         
-        response = self.get("/api/ecom/order/get-orders-for-customer")
-        
-        assert response.ok, f"Failed to get orders: {response.status} {response.text()}"
-        
-        orders = response.json()
-        logger.info(f"Retrieved {len(orders['data'])} orders")
-        
-        return orders
+        with allure.step("Getting all orders"):
+            response = self.get("/api/ecom/order/get-orders-for-customer")
+            
+            assert response.ok, f"Failed to get orders: {response.status} {response.text()}"
+            
+            orders = response.json()
+            logger.info(f"Retrieved {len(orders['data'])} orders")
+            
+            return orders
