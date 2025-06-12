@@ -1,0 +1,63 @@
+Playwright python commands
+
+Installation
+Step 1: Install Node.js 
+Playwright is built on Node.js, so first, install it:
+- Download from Node.js - https://nodejs.org/en
+- Verify installation: 
+npm -v
+node -v
+
+Step 2: Install Playwright
+Run the following command:
+
+pip install pytest-playwright
+
+npx playwright install
+
+Step 3: Run the execution
+npx playwright codegen https://example.com
+
+To execute in parallel
+pip install pytest pytest-xdist
+
+Install pytest reporting
+pip install pytest-html
+
+Dump tracing zip file here
+https://trace.playwright.dev/
+
+Then install Allure commandline
+npm install -g allure-commandline
+
+Open the report
+allure serve ./allure-results
+
+==================================================
+
+Execute Test file in Headed mode
+pytest .\_01_InvokeBrowser.py --headed -s
+
+Execute specific test case from Test file in Headed mode
+pytest .\_08_UserActions.py::test_enter_key_action --headed -s
+
+parallel execution with workers as 4
+pytest .\_07_ParallelExecutionAlerts.py -n 4 -v --headed
+
+parallel execution with auto workers detection
+pytest .\_07_ParallelExecutionAlerts.py -n auto -v
+
+Open codegen browser
+npx playwright codegen https://rahulshettyacademy.com/client
+
+Give CLI arguments for execution
+pytest .\EcomAppAutomationFramework\TestCases\_001_VerifyPlaceOrder.py --headed -s --browser_name firefox
+
+Get Pytest Report
+pytest .\EcomAppAutomationFramework\TestCases\_001_VerifyPlaceOrder.py --headed -s --html=PytestReport/report.html
+
+With Tracing
+pytest .\EcomAppAutomationFramework\TestCases\_001_VerifyPlaceOrder.py --headed -s --html=PytestReport/report.html --tracing on
+
+Allure Reporting
+pytest .\EcomAppAutomationFramework\TestCases\ --headed -s --alluredir=./allure-results
