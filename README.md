@@ -174,7 +174,7 @@ To view the reports:
 1. Run tests with Allure reporting enabled
 2. Generate and open the report
 
-![Allure Report](/Misc/allureReport.png)
+![Allure Report](/Misc/AllureReport.png)
 
 ## 📧 Contacts
 
